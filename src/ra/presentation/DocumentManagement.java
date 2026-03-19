@@ -41,7 +41,7 @@ public class DocumentManagement {
                 case 3:
                     System.out.println("Nhap ma tai lieu can sua:");
                     String id = scanner.nextLine();
-                    DocumentBusiness.getInstance().updateDocument(id); // FIX
+                    DocumentBusiness.getInstance().updateDocument(id);
                     break;
 
                 case 4:
@@ -54,7 +54,7 @@ public class DocumentManagement {
                     System.out.println("Nhap ten tai lieu can tim:");
                     String name = scanner.nextLine();
 
-                    Document doc = DocumentBusiness.getInstance().findDocumentByName(name); // FIX
+                    Document doc = DocumentBusiness.getInstance().findDocumentByName(name);
                     if (doc != null) {
                         doc.displayData();
                     } else {
@@ -65,7 +65,7 @@ public class DocumentManagement {
                 case 6:
                     DocumentBusiness.getInstance()
                             .filterDocument(1000)
-                            .forEach(Document::displayData); // FIX
+                            .forEach(Document::displayData);
                     break;
 
                 case 7:

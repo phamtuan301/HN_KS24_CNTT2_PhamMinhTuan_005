@@ -69,7 +69,7 @@ public class DocumentBusiness {
                         scanner.nextLine();
                         break;
                     default:
-                        System.out.println("Lua chon khong hop le!"); // FIX: không xóa nữa
+                        System.out.println("Lua chon khong hop le!");
                 }
                 return;
             }
@@ -112,7 +112,7 @@ public class DocumentBusiness {
         }
 
         return documents.stream()
-                .sorted(Comparator.comparingInt(Document::getDownloads).reversed()) // FIX: giảm dần
+                .sorted(Comparator.comparingInt(Document::getDownloads).reversed())
                 .toList();
     }
 
