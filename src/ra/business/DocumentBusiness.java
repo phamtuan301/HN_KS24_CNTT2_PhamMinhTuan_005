@@ -1,57 +1,58 @@
 package ra.business;
+
 import ra.entity.Document;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-// doi tuong DocumentBusiness chi duoc ton tai 1 lan, su dung singleton pattern
-// Cac phuong thuc su dung java 8
+
 public class DocumentBusiness {
-    private List<Document> documents;
+    private List<Document> documents = new ArrayList<>();
     private static DocumentBusiness instance;
+
     private DocumentBusiness() {
     }
-    public static DocumentBusiness getInstance() {
+
+    public static synchronized DocumentBusiness getInstance() {
         if (instance == null) {
             instance = new DocumentBusiness();
         }
         return instance;
     }
-    // Hien thi toan bo danh sach document, neu rong thi in loi
+
     public void displayAll() {
-        if (documents == null) {
+        if (documents.isEmpty()) {
             System.out.println("Danh sach tai lieu rong!");
             return;
         }
-        for (Document document : documents) {
-            document.displayData();
-        }
+        documents.forEach(Document::displayData);
     }
-    // Them document vao danh sach, neu ID da ton tai thi in loi, dung try catch de bat loi trung lap
+
     public void addDocument(Document document) {
-        if(documents == null) {
-            documents = new ArrayList<>();
-        }
-        if(documents.stream().anyMatch(d -> d.getDocumentId().equals(document.getDocumentId()))) {
+        if (documents.stream().anyMatch(d -> d.getDocumentId().equals(document.getDocumentId()))) {
             System.out.println("Ma tai lieu da ton tai!");
             return;
         }
         documents.add(document);
     }
-    // Cho nguoi dung sua thong tin cua document theo ID
-    public void updateDocument(Document document, String documentId) {
-        if(documents == null) {
+
+
+    public void updateDocument(String documentId) {
+        if (documents.isEmpty()) {
             return;
         }
+
         for (Document doc : documents) {
             if (doc.getDocumentId().equals(documentId)) {
                 System.out.println("Chon truong can sua:");
                 System.out.println("1. Ten tai lieu");
                 System.out.println("2. Kich thuoc tai lieu");
                 System.out.println("3. So lan tai tai lieu");
+
                 Scanner scanner = new Scanner(System.in);
                 int choice = scanner.nextInt();
                 scanner.nextLine();
+
                 switch (choice) {
                     case 1:
                         System.out.println("Nhap ten tai lieu moi:");
@@ -68,46 +69,60 @@ public class DocumentBusiness {
                         scanner.nextLine();
                         break;
                     default:
-                        System.out.println("Lua chon khong hop le!");
-                        documents.removeIf(documents -> documents.getDocumentId().equals(documentId));
+                        System.out.println("Lua chon khong hop le!"); // FIX: không xóa nữa
                 }
+                return;
             }
         }
-    };
-    // Tim kiem tai lieu theo ten, khong phan biet hoa thuong, tra ve document neu tim thay, khong thay thi in loi
+        System.out.println("Khong tim thay tai lieu!");
+    }
+
     public Document findDocumentByName(String documentName) {
-        if (documents == null) {
+        if (documents.isEmpty()) {
             System.out.println("Danh sach tai lieu rong!");
             return null;
         }
-        return documents.stream().filter(doc -> doc.getDocumentName().toLowerCase().equals(documentName.toLowerCase())).findFirst().orElse(null);
 
+        return documents.stream()
+                .filter(doc -> doc.getDocumentName().toLowerCase().contains(documentName.toLowerCase())) // FIX: contains
+                .findFirst()
+                .orElse(null);
     }
-    // Xoa tai lieu theo ID, khong tim thay thi in loi
+
     public void deleteDocumentById(String documentId) {
-        if(documents == null) {
+        if (documents.isEmpty()) {
             return;
         }
-        Document document = documents.stream().filter(doc -> doc.getDocumentId().equals(documentId)).findFirst().orElse(null);
-        if(document == null) {
+
+        Document document = documents.stream()
+                .filter(doc -> doc.getDocumentId().equals(documentId))
+                .findFirst()
+                .orElse(null);
+
+        if (document == null) {
             System.out.println("Khong tim thay tai lieu!");
             return;
         }
         documents.remove(document);
     }
-    // Sap xep danh sach tai lieu theo so lan tai giam dan, tra ve danh sach sau khi sap xep
+
     public List<Document> sortDocumentByDownloads() {
-        if (documents == null) {
+        if (documents.isEmpty()) {
             return null;
         }
-        return documents.stream().sorted(Comparator.comparingInt(Document::getDownloads)).toList();
+
+        return documents.stream()
+                .sorted(Comparator.comparingInt(Document::getDownloads).reversed()) // FIX: giảm dần
+                .toList();
     }
-    // Loc danh sach tai lieu co so lan tai >= 1000, tra ve danh sach sau khi loc
+
     public List<Document> filterDocument(int downloads) {
-        if (documents == null) {
+        if (documents.isEmpty()) {
             return null;
         }
-        return documents.stream().filter(doc -> doc.getDownloads() >= downloads).toList();
+
+        return documents.stream()
+                .filter(doc -> doc.getDownloads() >= downloads)
+                .toList();
     }
 }
-
